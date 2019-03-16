@@ -4,14 +4,17 @@ A collection of programs for reading and writing data on cassette tapes with mod
 HOW TO USE THESE PROGRAMS.
 
 0. It is advised that you should make a directory called "tapelion", like so:
+
     `mkdir ~/tapelion`
 
 1. Place all the programs into the tapelion directory.
 
 2. Source the "scripts.sh" file, like so:
+
     `source scripts.sh`
 
 3. To write to a tape, use the following steps:
+
     0. Plug the line out (headphones/speaker jack) of your computer into the line in (microphone jack)
     of your tape deck. Make sure that a writable tape is loaded in the tape deck. Also make sure that
     sox is installed and will work with your line out.
@@ -25,6 +28,7 @@ HOW TO USE THESE PROGRAMS.
     stop recording.
 
 4. To read from the tape, use the following steps:
+
     0. Plug the line out from your tape deck into the line in to your computer.
     
     1. Use the command `tapelion_read`. Enter in the amount of the tape you wish to read.
