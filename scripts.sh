@@ -16,11 +16,13 @@
 
 # A single command to read data from the tape.
 tapelion_read() {
+    cd ~/tapelion;
     python3 ./demod.py;
 }
 
 # A single command to write data to the tape.
 tapelion_write() {
+    cd ~/tapelion;
     g++ tapewrite.cpp -o tapewrite;
     ./tapewrite;
 }
