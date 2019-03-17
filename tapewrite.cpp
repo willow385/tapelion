@@ -64,7 +64,7 @@ void tone(int x) {
 }
 
 
-// Takes 0.5 seconds to play each character.
+// Takes 0.5 seconds to play each character. A 3000 Hz tone is used to signal the end of a byte.
 void asc(int a, int b, int c) {
     tone(a);
     tone(b);
@@ -73,9 +73,8 @@ void asc(int a, int b, int c) {
 }
 
 
-// Ascii values used here. A 2250 Hz tone is used to separate bytes.
+// Ascii values used here.
 void to_bin(char x) {
-    system("play -n synth 0.25 sin 2250");
     if (x == ' ') {
         asc(0, 3, 2);
     } else if (x == '!') {
@@ -187,13 +186,13 @@ int main(void) {
     cout << "Type in the string that you wish to translate and press ENTER." << endl;
     string input;
     getline(cin, input);
-    system("play -n synth 1 sin 3250"); // Demaracate start of file
+    system("play -n synth 1 sin 3250"); // Demarcate start of file
     for (int i = 0; i < strlen(input.c_str()); i++) { // Convert the file into audio (stdin for the moment)
         to_bin(input.c_str()[i]);
         cout << input.c_str()[i];
     }
     system("play -n synth 1 sin 3250"); // Demarcate end of file
-    cout << "Finished.\n";
+    cout << "\nFinished.\n";
     cout << "Loading time: ";
     float time = 2 + (0.5 * strlen(input.c_str()));
     cout << time << " seconds\n";
