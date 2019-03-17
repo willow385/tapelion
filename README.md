@@ -24,7 +24,7 @@ HOW TO USE THESE PROGRAMS.
     and `"`. (Never fear; full support for the entire ASCII character set is coming soon.)
     
     2. Make sure that your tape deck is recording when you press ENTER to record your string. It is advised
-    that you should listen to the data transfer ~~ because data is beautiful ~~ so that you know when to
+    that you should listen to the data transfer ~~because data is beautiful~~ so that you know when to
     stop recording.
 
 4. To read from the tape, use the following steps:
