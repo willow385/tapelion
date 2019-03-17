@@ -1,4 +1,4 @@
-#   The scripts for using Tapelion from the Bourne-Again Shell.
+#   The scripts for using Tapelion in the Bourne-Again Shell.
 #   Copyright (C) 2019  Dante James Falzone
 #
 #   This program is free software: you can redistribute it and/or modify
