@@ -20,8 +20,8 @@ HOW TO USE THESE PROGRAMS.
     sox is installed and will work with your line out.
     
     1. Use the command `tapelion_write` to write information to the tape. It will prompt you to type in
-    a string. As of version 0, valid characters include uppercase A-Z and spaces, `!`, `,`, `.`, `#`, `$`,
-    and `"`. (Never fear; full support for the entire ASCII character set is coming soon.)
+    a string. As of version 2, valid characters include uppercase A-Z, lowercase a-z, spaces, `!`, `,`,
+    `.`, `#`, `$`, and `"`. (Never fear; full support for the entire ASCII character set is coming soon.)
     
     2. Make sure that your tape deck is recording when you press ENTER to record your string. It is advised
     that you should listen to the data transfer ~~because data is beautiful~~ so that you know when to
@@ -31,7 +31,9 @@ HOW TO USE THESE PROGRAMS.
 
     0. Plug the line out from your tape deck into the line in to your computer.
     
-    1. Use the command `tapelion_read`. Enter in the amount of the tape you wish to read.
+    1. Use the command `tapelion_read`. Enter in the amount of the tape you wish to read. The program will
+    give you a prompt asking if you would like to use error checking; you can try this, but it is slower,
+    more complicated, and more prone to bugs.
     
     2. Play the tape while Tapelion loads data from it. Stop the tape when the data transfer is finished.
     The data stored in the tape will be printed to stdout at the bottom of your terminal.
