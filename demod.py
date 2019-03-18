@@ -1,6 +1,6 @@
 """
-    demod.py - a program for reading data from casette tapes. Part of Tapelion.
-    Copyright (C) 2019  Dante James Falzone
+    Program for reading information from Tapelion tapes.
+    Copyright (C) 2019 Dante James Falzone
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -13,229 +13,385 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 """
 import sys
-from aubio import source, pitch
+from aubio import source
+from aubio import pitch as freq
 import numpy as np
 import re
 import pyaudio
 import wave
 
-print("Type in the number of seconds of tape to be read.")
-x = input()
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = x
-WAVE_OUTPUT_FILENAME = "tape_input.wav"
+original_data = []
 
-p = pyaudio.PyAudio()
+def get_from_tape():
+    print("(When entering data, it should be noted that uppercase characters tend to work better than lowercase.)")
+    x = input()
+    CHUNK = 1024
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 2
+    RATE = 44100
+    RECORD_SECONDS = x
+    WAVE_OUTPUT_FILENAME = "tape_input.wav"
 
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+    p = pyaudio.PyAudio()
 
-print("* reading from tape")
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
 
-frames = []
+    print("Reading from audio input...")
 
-for i in range(0, int(RATE / int(CHUNK) * int(RECORD_SECONDS))):
-    data = stream.read(CHUNK)
-    frames.append(data)
+    frames = []
 
-print("* done reading")
+    for i in range(0, int(RATE / int(CHUNK) * int(RECORD_SECONDS))):
+        data = stream.read(CHUNK)
+        frames.append(data)
 
-stream.stop_stream()
-stream.close()
-p.terminate()
+    print("Done reading.")
 
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
-
-win_s = 4096
-hop_s = 512
-
-s = source("tape_input.wav", 44100, hop_s)
-samplerate = s.samplerate
-
-tolerance = 0.8
-
-pitch_o = pitch("yin", win_s, hop_s, samplerate)
-pitch_o.set_unit("midi")
-pitch_o.set_tolerance(tolerance)
-
-pitches = []
-confidences = []
-
-total_frames = 0
-while True:
-    samples, read = s()
-    pitch = pitch_o(samples)[0]
-    pitches += [pitch]
-    confidence = pitch_o.get_confidence()
-    confidences += [confidence]
-    total_frames += read
-    if read < hop_s: break
+    print("Processing data...")
+    wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(p.get_sample_size(FORMAT))
+    wf.setframerate(RATE)
+    wf.writeframes(b''.join(frames))
+    wf.close()
 
 
-#print("Average frequency = " + str(np.array(pitches).mean()) + " hz")
+    win_s = 4096
+    hop_s = 512
 
-numbers = []
-for x in pitches:
-    if int(x) in range (62, 63):
-        numbers.append("0")
-    elif int(x) in range (73, 74):
-        numbers.append("1")
-    elif int(x) in range (78, 82):
-        numbers.append("2")
-    elif int(x) in range (84, 87):
-        numbers.append("3")
-    elif int(x) in range (88, 89):
-        numbers.append("4")
-    elif int(x) in range (91, 92):
-        numbers.append("5")
-    elif int(x) in range (94, 95):
-        numbers.append("6")
-    elif int(x) in range (96, 97):
-        numbers.append("7")
-    elif int(x) in range (98, 99):
-        numbers.append("8")
-    elif int(x) in range (100, 101):
-        numbers.append("9")
-    elif int(x) == 102:
-        numbers.append("NULL")
-    elif int(x) >= 103:
-        numbers.append("STREAM_CAP")
+    s = source("tape_input.wav", 44100, hop_s)
+    samplerate = s.samplerate
 
-print(pitches)
+    tolerance = 0.8
 
-aux_list = []
-for i in range(len(numbers)):
-    if not numbers[i] == numbers[i-1]:
-        aux_list.append(numbers[i])
+    pitch_o = freq("yin", win_s, hop_s, samplerate)
+    pitch_o.set_unit("midi")
+    pitch_o.set_tolerance(tolerance)
 
-#print(aux_list)
+    pitches = []
+    confidences = []
 
-interpret = ''.join(aux_list)
-
-#print(interpret)
-
-text_chunks = interpret.split("ULL")
-
-#print(text_chunks)
-
-output = []
-
-def ascii_to_char(text):
-    space = re.search('032N', text)
-    exclm = re.search('03N',  text)
-    dblqt = re.search('034N', text)
-    hshtg = re.search('035N', text)
-    dollr = re.search('036N', text)
-    perid = re.search('046N', text)
-    comma = re.search('04N',  text)
-    A = re.search('065N', text)
-    B = re.search('06N', text)
-    C = re.search('067N', text)
-    D = re.search('068N', text)
-    E = re.search('069N', text)
-    F = re.search('070N', text)
-    G = re.search('071N', text)
-    H = re.search('072N', text)
-    I = re.search('073N', text)
-    J = re.search('074N', text)
-    K = re.search('075N', text)
-    L = re.search('076N', text)
-    M = re.search('07N', text)
-    N = re.search('078N', text)
-    O = re.search('079N', text)
-    P = re.search('080N', text)
-    Q = re.search('081N', text)
-    R = re.search('082N', text)
-    S = re.search('083N', text)
-    T = re.search('084N', text)
-    U = re.search('085N', text)
-    V = re.search('086N', text)
-    W = re.search('087N', text)
-    X = re.search('08N', text)
-    Y = re.search('089N', text)
-    Z = re.search('090N', text)
-
-    if space:
-        output.append(' ')
-    if exclm:
-        output.append('!')
-    if dblqt:
-        output.append('"')
-    if hshtg:
-        output.append('#')
-    if dollr:
-        output.append('$')
-    if perid:
-        output.append('.')
-    if comma:
-        output.append(',')
-    if A:
-        output.append('A')
-    if B:
-        output.append('B')
-    if C:
-        output.append('C')
-    if D:
-        output.append('D')
-    if E:
-        output.append('E')
-    if F:
-        output.append('F')
-    if G:
-        output.append('G')
-    if H:
-        output.append('H')
-    if I:
-        output.append('I')
-    if J:
-        output.append('J')
-    if L:
-        output.append('L')
-    if M:
-        output.append('M')
-    if O:
-        output.append('O')
-    if P:
-        output.append('P')
-    if Q:
-        output.append('Q')
-    if R:
-        output.append('R')
-    if S:
-        output.append('S')
-    if T:
-        output.append('T')
-    if U:
-        output.append('U')
-    if V:
-        output.append('V')
-    if W:
-        output.append('W')
-    if X:
-        output.append('X')
-    if Y:
-        output.append('Y')
-    if Z:
-        output.append('Z')
+    total_frames = 0
+    while True:
+        samples, read = s()
+        pitch = pitch_o(samples)[0]
+        pitches += [pitch]
+        confidence = pitch_o.get_confidence()
+        confidences += [confidence]
+        total_frames += read
+        if read < hop_s: break
 
 
+    #print("Average frequency = " + str(np.array(pitches).mean()) + " hz")
 
-for x in text_chunks:
-    ascii_to_char(x)
+    numbers = []
+    for x in pitches:
+        if int(x) in range (62, 63):
+            numbers.append("0")
+        elif int(x) in range (73, 74):
+            numbers.append("1")
+        elif int(x) in range (78, 82):
+            numbers.append("2")
+        elif int(x) in range (84, 87):
+            numbers.append("3")
+        elif int(x) in range (88, 89):
+            numbers.append("4")
+        elif int(x) in range (91, 92):
+            numbers.append("5")
+        elif int(x) in range (94, 95):
+            numbers.append("6")
+        elif int(x) in range (96, 97):
+            numbers.append("7")
+        elif int(x) in range (98, 99):
+            numbers.append("8")
+        elif int(x) in range (100, 101):
+            numbers.append("9")
+        elif int(x) == 102:
+            numbers.append("NULL")
 
-print(''.join(output))
+    #print(pitches)
+
+    aux_list = []
+    for i in range(len(numbers)):
+        if not numbers[i] == numbers[i-1]:
+            aux_list.append(numbers[i])
+
+    #print(aux_list)
+
+    interpret = ''.join(aux_list)
+
+    #print(interpret)
+
+    text_chunks = interpret.split("ULL")
+
+    print(','.join(text_chunks))
+
+    output = []
+
+    def ascii_to_char(text):
+        codeb = re.search('\d+N', text)
+        space = re.search('032N', text)
+        exclm = re.search('03N',  text)
+        dblqt = re.search('034N', text)
+        hshtg = re.search('035N', text)
+        dollr = re.search('036N', text)
+        perid = re.search('046N', text)
+        comma = re.search('04N',  text)
+        newln = re.search('012N', text)
+        A = re.search('065N', text)
+        B = re.search('06N', text)
+        C = re.search('067N', text)
+        D = re.search('068N', text)
+        E = re.search('069N', text)
+        F = re.search('070N', text)
+        G = re.search('071N', text)
+        H = re.search('072N', text)
+        I = re.search('073N', text)
+        J = re.search('074N', text)
+        K = re.search('075N', text)
+        L = re.search('076N', text)
+        M = re.search('07N', text)
+        N = re.search('078N', text)
+        O = re.search('079N', text)
+        P = re.search('080N', text)
+        Q = re.search('081N', text)
+        R = re.search('082N', text)
+        S = re.search('083N', text)
+        T = re.search('084N', text)
+        U = re.search('085N', text)
+        V = re.search('086N', text)
+        W = re.search('087N', text)
+        X = re.search('08N', text)
+        Y = re.search('089N', text)
+        Z = re.search('090N', text)
+        lower = re.search('980N', text)
+        if space:
+            output.append(' ')
+        elif exclm:
+            output.append('!')
+        elif dblqt:
+            output.append('"')
+        elif hshtg:
+            output.append('#')
+        elif dollr:
+            output.append('$')
+        elif perid:
+            output.append('.')
+        elif comma:
+            output.append(',')
+        elif A:
+            output.append('A')
+        elif B:
+            output.append('B')
+        elif C:
+            output.append('C')
+        elif D:
+            output.append('D')
+        elif E:
+            output.append('E')
+        elif F:
+            output.append('F')
+        elif G:
+            output.append('G')
+        elif H:
+            output.append('H')
+        elif I:
+            output.append('I')
+        elif J:
+            output.append('J')
+        elif K:
+            output.append('K')
+        elif L:
+            output.append('L')
+        elif M:
+            output.append('M')
+        elif N:
+            output.append('N')
+        elif O:
+            output.append('O')
+        elif P:
+            output.append('P')
+        elif Q:
+            output.append('Q')
+        elif R:
+            output.append('R')
+        elif S:
+            output.append('S')
+        elif T:
+            output.append('T')
+        elif U:
+            output.append('U')
+        elif V:
+            output.append('V')
+        elif W:
+            output.append('W')
+        elif X:
+            output.append('X')
+        elif Y:
+            output.append('Y')
+        elif Z:
+            output.append('Z')
+        elif newln:
+            output.append('\n')
+        elif lower:
+            output.append('܍')
+        else:
+            if codeb:
+                output.append('␕') # prints the ascii "negative acknowledgement" character
+        """
+        Letters c through z are different from ascii because ascii values don't seem to work
+        for those characters.
+        """
+
+    for x in text_chunks:
+        ascii_to_char(x)
+
+    format = []
+    for i in range (0, len(output)):
+        try:
+            if output[i] == "܍":
+                output[i + 1] = output[i + 1].lower()
+                output.remove(output[i])
+        except IndexError:
+            continue
+    return(''.join(output))
+
+print("Make sure you know ahead of time the start and end times for your data.")
+print("Would you like to use error-checking? This is an experimental feature and takes three times as long,")
+print("but it might help preserve your data. [y/n]")
+choice = input()
+if choice == "y":
+    print("Set your recording medium to the start position of your data.")
+    print("Then type in how many seconds to read.")
+    first_pass = get_from_tape()
+    print("Now rewind back to the start position of your data to read the data a second time.")
+    print("Then type in once more how many seconds to read.")
+    second_pass = get_from_tape()
+    print("Now rewind again to the start position of your data to read a third time.")
+    print("Then type in for the third and last time how many seconds to read.")
+    third_pass = get_from_tape()
+
+    # Error-checking algorithm
+    def reconstruct(x, y, z):
+        x_list = []
+        y_list = []
+        z_list = []
+        for char in x:
+            x_list.append(char)
+        for char in y:
+            y_list.append(char)
+        for char in z:
+            z_list.append(char)
+
+        # Pick out the characters that match; reject errors and non-
+        # matching characters.
+        x_y_common = []
+        for i in range (0, len(x_list)):
+            try:
+                if x_list[i] == y_list[i]:
+                    x_y_common.append(x_list[i])
+                elif y_list[i] == "␕":
+                    x_y_common.append(x_list[i])
+                elif x_list[i] == "␕":
+                    x_y_common.append(y_list[i])
+                elif x_list[i] != y_list[i]:
+                    x_y_common.append("␕")
+            except IndexError:
+                x_y_common.append(x_list[i])
+
+
+        y_z_common = []
+        for i in range (0, len(y_list)): # github.com/DanteFalzone0
+            try:
+                if y_list[i] == z_list[i]:
+                    y_z_common.append(y_list[i])
+                elif y_list[i] == "␕":
+                    y_z_common.append(z_list[i])
+                elif z_list[i] == "␕":
+                    y_z_common.append(y_list[i])
+                elif z_list[i] != y_list[i]:
+                    y_z_common.append("␕")
+            except IndexError:
+                y_z_common.append(y_list[i])
+
+        x_z_common = []
+        for i in range (0, len(z_list)):
+            try:
+                if z_list[i] == x_list[i]:
+                    x_z_common.append(x_list[i])
+                elif z_list[i] == "␕":
+                    x_z_common.append(x_list[i])
+                elif x_list[i] == "␕":
+                    x_z_common.append(z_list[i])
+                elif z_list[i] != x_list[i]:
+                    x_z_common.append("␕")
+            except IndexError:
+                x_z_common.append(z_list[i])
+
+        opt0 = ''.join(x_y_common)
+        opt1 = ''.join(y_z_common)
+        opt2 = ''.join(x_z_common)
+
+        # If any of the results don't have error characters, print that one.
+        if "␕" in opt0:
+            if "␕" in opt1:
+                if "␕" in opt2:
+                    try:
+                        # If all of the results have error characters, try running them through the algorithm again.
+                        reconstruct(opt0, opt1, opt2)
+                    except RecursionError:
+                        # If running the results through the algorithm a bunch of times doesn't help,
+                        # weight them according to how many errors they have and print the one with the least.
+                        xweight = 0
+                        yweight = 0
+                        zweight = 0
+                        for char in opt0:
+                            if char == "␕":
+                                xweight += 1
+                        for char in opt1:
+                            if char == "␕":
+                                yweight += 1
+                        for char in opt2:
+                            if char == "␕":
+                                zweight += 1
+                        if xweight >= yweight >= zweight:
+                            print(opt2)
+                        elif xweight >= zweight >= yweight:
+                            print(opt1)
+                        elif yweight >= zweight >= xweight:
+                            print(opt0)
+                        elif yweight >= xweight >= zweight:
+                            print(opt2)
+                        elif zweight >= yweight >= xweight:
+                            print(opt0)
+                        elif zweight >= xweight >= yweight:
+                            print(opt1)
+                else:
+                    print(opt2)
+            else:
+                print(opt1)
+        else:
+            print(opt0)
+
+    print("Finished processing data.")
+    print("There may be corrupted characters in your data. Look over it to make corrections.")
+    print("Data input:")
+    for x in original_data:
+        print(x)
+    print("Data processed for error removal:")
+    reconstruct(first_pass, second_pass, third_pass)
+else:
+    print("Set your recording medium to the start position of your data.")
+    print("Then type in how many seconds to read from the medium.")
+    print(get_from_tape())
