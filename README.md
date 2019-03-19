@@ -42,17 +42,10 @@ HOW TO USE THESE PROGRAMS.
 Dependencies:
 
     Python:
-
         pip3, aubio, pyaudio, numpy, wave
-
     C++:
-
         g++
-
     Other:
-
         Bash
-
         portaudio19-dev (for Pyaudio)
-
         sox
