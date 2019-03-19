@@ -121,40 +121,6 @@ void to_bin(char x) {
         asc(0, 7, 9);
     } else if (x == 'P') {
         asc(0, 8, 0);
-
-    /* A random thought I just had: the digits of a           *
-     * binary number can be thought of as forking             *
-     * points along a tree. For example, suppose I            *
-     * have a chunk of 3 bits. This can be mapped out         *
-     * as follows:                                            *
-     *                                                        *
-     *                     START                              *
-     *                    /     \                             *
-     *                   /       \                            *
-     *                  /         \                           *
-     *                 1           0                          *
-     *                / \         / \                         *
-     *               /   \       /   \                        *
-     *              1     0     1     0                       *
-     *             / \   / \   / \   / \                      *
-     *            1   0 1   0 1   0 1   0                     *
-     *                                                        *
-     * so that any possible 3-digit binary number can         *
-     * be described as a specific path along this tree.       *
-     * For example, `110` would be `left-left-right`.         *
-     *                                                        *
-     * Technically this is true for all number bases in       *
-     * the set of real numbers of base n where n is a         *
-     * whole number. But it works more complexly as n         *
-     * approaches infinity; for example, creating such        *
-     * a tree for decimal would mean that every node would    *
-     * have ten branches.                                     *
-     *                                                        *
-     * This could also be viewed as a decision tree, or a     *
-     * hierarchy of nested categories; for example, the left  *
-     * half of the above tree could be thought of as `numbers *
-     * that are equal to or greater than four`.               */
-
     } else if (x == 'Q') {
         asc(0, 8, 1);
     } else if (x == 'R') {
@@ -257,9 +223,82 @@ void to_bin(char x) {
     } else if (x == 'z') {
         asc(9, 8, 0);
         asc(0, 9, 0);
-
+//"""
+    } else if (x == '\'') {
+        asc(0, 3, 9);
+    } else if (x == '%') {
+        asc(0, 3, 7);
+    } else if (x == '&') {
+        asc(0, 3, 8);
+    } else if (x == '(') {
+        asc(0, 4, 0);
+    } else if (x == ')') {
+        asc(0, 4, 1);
+    } else if (x == '*') {
+        asc(0, 4, 2);
+    } else if (x == '+') {
+        asc(0, 4, 3);
+    } else if (x == '-') {
+        asc(0, 4, 5);
+    } else if (x == '/') {
+        asc(0, 4, 7);
+    } else if (x == '0') {
+        asc(0, 4, 8);
+    } else if (x == '1') {
+        asc(0, 4, 9);
+    } else if (x == '2') {
+        asc(0, 5, 0);
+    } else if (x == '3') {
+        asc(0, 5, 1);
+    } else if (x == '4') {
+        asc(0, 5, 2);
+    } else if (x == '5') {
+        asc(0, 5, 3);
+    } else if (x == '6') {
+        asc(0, 5, 4);
+    } else if (x == '7') {
+        asc(0, 5, 5);
+    } else if (x == '8') {
+        asc(0, 5, 6);
+    } else if (x == '9') {
+        asc(0, 5, 7);
+    } else if (x == ':') {
+        asc(0, 5, 8);
+    } else if (x == ';') {
+        asc(0, 5, 9);
+    } else if (x == '<') {
+        asc(0, 6, 0);
+    } else if (x == '=') {
+        asc(0, 6, 1);
+    } else if (x == '>') {
+        asc(0, 6, 2);
+    } else if (x == '?') {
+        asc(0, 6, 3);
+    } else if (x == '@') {
+        asc(0, 6, 4);
+    } else if (x == '[') {
+        asc(0, 9, 1);
+    } else if (x == '\\') {
+        asc(0, 9, 2);
+    } else if (x == ']') {
+        asc(0, 9, 3);
+    } else if (x == '^') {
+        asc(0, 9, 4);
+    } else if (x == '_') {
+        asc(0, 9, 5);
+    } else if (x == '`') {
+        asc(0, 9, 6);
+    } else if (x == '{') {
+        asc(1, 2, 3);
+    } else if (x == '|') {
+        asc(1, 2, 4);
+    } else if (x == '}') {
+        asc(1, 2, 5);
+    } else if (x == '~') {
+        asc(1, 2, 6);
+//"""
     } else {
-        cout << "FATAL ERROR invalid/unrecognized char" << endl;
+        cout << "\033[1;31m" << "Fatal error: unrecognized/invalid character" << "\033[0m\n" << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -276,7 +315,7 @@ int main(void) {
         cout << input.c_str()[i];
 //        time += 0.5;
     }
-    asc(0, 1, 2);
+    asc(0, 1, 2); // put a newline at the end
     system("play -n synth 1 sin 3250"); // Demarcate end of file
     cout << "\nFinished.\n";
 //    cout << "Total playing time: " << time << " seconds\n";
