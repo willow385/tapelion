@@ -37,3 +37,22 @@ HOW TO USE THESE PROGRAMS.
     
     2. Play the tape while Tapelion loads data from it. Stop the tape when the data transfer is finished.
     The data stored in the tape will be printed to stdout at the bottom of your terminal.
+
+
+Dependencies:
+
+    Python:
+
+        pip3, aubio, pyaudio, numpy, wave
+
+    C++:
+
+        g++
+
+    Other:
+
+        Bash
+
+        portaudio19-dev (for Pyaudio)
+
+        sox
