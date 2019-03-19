@@ -176,6 +176,43 @@ def get_from_tape():
         Y = re.search('089N', text)
         Z = re.search('090N', text)
         lower = re.search('980N', text)
+        apost = re.search('039N', text) # '
+        prcnt = re.search('037N', text) # %
+        amprs = re.search('038N', text) # &
+        opren = re.search('040N', text) # (
+        closp = re.search('041N', text) # )
+        aster = re.search('042N', text) # *
+        pluss = re.search('043N', text) # +
+        minus = re.search('045N', text) # -
+        fslsh = re.search('047N', text) # /
+        zero  = re.search('048N', text) # 0
+        one   = re.search('049N', text) # 1
+        two   = re.search('050N', text) # 2
+        three = re.search('051N', text) # 3
+        four  = re.search('052N', text) # 4
+        five  = re.search('053N', text) # 5
+        six   = re.search('054N', text) # 6
+        seven = re.search('05N', text)  # 7
+        eight = re.search('056N', text) # 8
+        nine  = re.search('057N', text) # 9
+        colon = re.search('058N', text) # :
+        semic = re.search('059N', text) # ;
+        opena = re.search('060N', text) # <
+        equal = re.search('061N', text) # =
+        closa = re.search('062N', text) # >
+        quest = re.search('063N', text) # ?
+        atsgn = re.search('064N', text) # @
+        opnbr = re.search('091N', text) # [
+        bcksl = re.search('092N', text) # \
+        closb = re.search('093N', text) # ]
+        dimak = re.search('094N', text) # ^
+        under = re.search('095N', text) # _
+        acute = re.search('096N', text) # `
+        openc = re.search('123N', text) # {
+        pipes = re.search('124N', text) # |
+        closc = re.search('125N', text) # }
+        tilde = re.search('126N', text) # ~
+
         if space:
             output.append(' ')
         elif exclm:
@@ -246,13 +283,82 @@ def get_from_tape():
             output.append('\n')
         elif lower:
             output.append('܍')
+        elif apost:
+            output.append('\'')
+        elif prcnt:
+            output.append('%')
+        elif amprs:
+            output.append('&')
+        elif opren:
+            output.append('(')
+        elif closp:
+            output.append(')')
+        elif aster:
+            output.append('*')
+        elif pluss:
+            output.append('+')
+        elif minus:
+            output.append('-')
+        elif fslsh:
+            output.append('/')
+        elif zero:
+            output.append('0')
+        elif one:
+            output.append('1')
+        elif two:
+            output.append('2')
+        elif three:
+            output.append('3')
+        elif four:
+            output.append('4')
+        elif five:
+            output.append('5')
+        elif six:
+            output.append('6')
+        elif seven:
+            output.append('7')
+        elif eight:
+            output.append('8')
+        elif nine:
+            output.append('9')
+        elif colon:
+            output.append(':')
+        elif semic:
+            output.append(';')
+        elif opena:
+            output.append('<')
+        elif equal:
+            output.append('=')
+        elif closa:
+            output.append('>')
+        elif quest:
+            output.append('?')
+        elif atsgn:
+            output.append('@')
+        elif opnbr:
+            output.append('[')
+        elif bcksl:
+            output.append('\\')
+        elif closb:
+            output.append(']')
+        elif dimak:
+            output.append('^')
+        elif under:
+            output.append('_')
+        elif acute:
+            output.append('`')
+        elif openc:
+            output.append('{')
+        elif pipes:
+            output.append('|')
+        elif closc:
+            output.append('}')
+        elif tilde:
+            output.append('~')
+
         else:
             if codeb:
                 output.append('␕') # prints the ascii "negative acknowledgement" character
-        """
-        Letters c through z are different from ascii because ascii values don't seem to work
-        for those characters.
-        """
 
     for x in text_chunks:
         ascii_to_char(x)
