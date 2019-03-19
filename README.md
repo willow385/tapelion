@@ -20,8 +20,7 @@ HOW TO USE THESE PROGRAMS.
     sox is installed and will work with your line out.
     
     1. Use the command `tapelion_write` to write information to the tape. It will prompt you to type in
-    a string. As of version 2, valid characters include uppercase A-Z, lowercase a-z, spaces, `!`, `,`,
-    `.`, `#`, `$`, and `"`. (Never fear; full support for the entire ASCII character set is coming soon.)
+    a string. As of version 3, valid characters include the full ascii character set.
     
     2. Make sure that your tape deck is recording when you press ENTER to record your string. It is advised
     that you should listen to the data transfer ~~because data is beautiful~~ so that you know when to
