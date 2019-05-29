@@ -1,5 +1,7 @@
 # Tapelion
 A collection of programs for reading and writing data on cassette tapes with modern computers.
+You should definitely fork the hell out of this and ask me all about it! My email is
+dante.j.falzone(AT-SIGN)protonmail.com
 
 HOW TO USE THESE PROGRAMS.
 
